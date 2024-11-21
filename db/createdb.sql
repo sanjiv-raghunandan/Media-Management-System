@@ -97,3 +97,41 @@ BEGIN
     SELECT new_user_id, category_ID, 'Default App'
     FROM media_categories;
 END;
+
+--JOIN
+-- This query retrieves information about all media files and their associated metadata.
+-- If a media file does not have metadata, it still appears in the results, but metadata fields will be NULL.
+SELECT 
+    m.media_ID,
+    m.title,
+    m.type,
+    mm.key AS metadata_key,
+    mm.value AS metadata_value
+FROM media m
+LEFT JOIN media_metadata mm ON m.media_ID = mm.media_ID;
+
+--AGGREGATE FUNCTION QUERY
+-- This query counts the number of media items for each type (e.g., video, audio) in the media table.
+-- It groups the media by type and displays the count in descending order of the count.
+SELECT 
+    type,
+    COUNT(*) AS media_count
+FROM media
+GROUP BY type
+ORDER BY media_count DESC;
+
+--NESTED QUERY
+-- This query retrieves the media files with the largest file size within each category.
+-- For each media file, it checks if its size matches the maximum size in its category using a subquery.
+SELECT 
+    m.media_ID,
+    m.title,
+    m.size_kb,
+    m.category_ID
+FROM media m
+WHERE m.size_kb = (
+    SELECT MAX(size_kb)
+    FROM media
+    WHERE category_ID = m.category_ID
+);
+
